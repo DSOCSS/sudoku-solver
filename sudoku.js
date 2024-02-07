@@ -1,7 +1,10 @@
+"use strict";
 /**
  * Sudoku solving program
  * @author Arthur Zarins
  */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isSolved = exports.removeSpaces = exports.convertToArray = void 0;
 /**
  * @param board a string representation of a board. Whitespace is ignored.
  * @returns a 3d array representing a board, with possible candidate lists for each square
@@ -13,9 +16,11 @@ function convertToArray(str) {
         var currRow = [];
         for (var col = 0; col < 9; col++) {
             if (str.charAt(row * 9 + col) == "0") {
+                //empty squares can become any number
                 currRow.push([1, 2, 3, 4, 5, 6, 7, 8, 9]);
             }
             else {
+                //filled squares can only be that number
                 currRow.push([Number(str.charAt(row * 9 + col))]);
             }
         }
@@ -23,6 +28,7 @@ function convertToArray(str) {
     }
     return arr;
 }
+exports.convertToArray = convertToArray;
 /** Return a version of a given string with no space characters */
 function removeSpaces(str) {
     while (str.indexOf(' ') > -1) {
@@ -31,6 +37,7 @@ function removeSpaces(str) {
     }
     return str;
 }
+exports.removeSpaces = removeSpaces;
 /**
  * @param board a 3d array of the board
  * @returns a string representation of the board
@@ -80,12 +87,13 @@ function isSolved(str) {
         if (digits.size < 9)
             return false;
     }
-    return true;
+    return true; //all checks have passed
 }
+exports.isSolved = isSolved;
 /**
  * @param str a string representation of the uncompleted board
  * @returns a string representation of the solved sudoku puzzle
  */
 function solveSudoku(str) {
 }
-module.exports = { removeSpaces: removeSpaces, convertToArray: convertToArray, isSolved: isSolved };
+// module.exports = { removeSpaces, convertToArray, isSolved };

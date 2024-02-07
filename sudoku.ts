@@ -7,7 +7,7 @@
  * @param board a string representation of a board. Whitespace is ignored.
  * @returns a 3d array representing a board, with possible candidate lists for each square
  */
-function convertToArray(str: string): Array<Array<Array<Number>>> {
+export function convertToArray(str: string): Array<Array<Array<Number>>> {
     str = removeSpaces(str); //remove space characters
     let arr: Array<Array<Array<Number>>> = [];
     for (let row = 0; row < 9; row++) {
@@ -27,7 +27,7 @@ function convertToArray(str: string): Array<Array<Array<Number>>> {
 }
 
 /** Return a version of a given string with no space characters */
-function removeSpaces(str: string): string {
+export function removeSpaces(str: string): string {
     while (str.indexOf(' ') > -1) {
         let space_i = str.indexOf(' ');
         str = str.slice(0, space_i) + str.slice(space_i + 1);
@@ -46,7 +46,7 @@ function convertToString(board: Array<Array<Array<Number>>>): string {
 /**
  * @returns true if game is completed and solved, false otherwise
  */
-function isSolved(str: string): boolean {
+export function isSolved(str: string): boolean {
     let game = convertToArray(str);
 
     //verify each row contains nine unique digits
@@ -94,4 +94,4 @@ function solveSudoku(str: string) {
 
 }
 
-module.exports = { removeSpaces, convertToArray, isSolved };
+// module.exports = { removeSpaces, convertToArray, isSolved };
