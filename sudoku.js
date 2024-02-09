@@ -38,6 +38,31 @@ function removeSpaces(str) {
     return str;
 }
 exports.removeSpaces = removeSpaces;
+function printBoard(board) {
+    board = removeSpaces(board);
+    console.log("-".repeat(18));
+    for (var offset = 0; offset < 9; offset++) {
+        var str = "|";
+        for (var char = 0; char < 9; char++) {
+            var x = " ";
+            if (board.charAt(char + 9 * offset) != "0") {
+                x = board.charAt(char + 9 * offset);
+            }
+            if ((char + 1) % 3 == 0) {
+                str += x + "|";
+            }
+            else {
+                str += (x + " ");
+            }
+        }
+        console.log(str);
+        if ((offset + 1) % 3 == 0) {
+            console.log("-".repeat(18));
+        }
+        str = "";
+    }
+}
+printBoard("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020");
 /**
  * @param board a 3d array of the board
  * @returns a string representation of the board
