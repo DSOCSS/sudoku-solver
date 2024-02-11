@@ -4,7 +4,7 @@
  * @author Arthur Zarins
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isSolved = exports.convertToString = exports.removeSpaces = exports.convertToArray = void 0;
+exports.isSolved = exports.convertToString = exports.createPrintString = exports.removeSpaces = exports.convertToArray = void 0;
 /**
  * @param board a string representation of a board. Whitespace is ignored.
  * @returns a 3d array representing a board, with possible candidate lists for each square
@@ -41,29 +41,36 @@ exports.removeSpaces = removeSpaces;
 /**
  * @author Nate Abbott
  */
-function printBoard(board) {
+function createPrintString(board) {
+    var res = "";
     board = removeSpaces(board);
-    console.log("-".repeat(18));
+    res += "-".repeat(19) + "\n";
     for (var offset = 0; offset < 9; offset++) {
-        var str = "|";
+        res += "|"; //left border
         for (var char = 0; char < 9; char++) {
             var x = " ";
             if (board.charAt(char + 9 * offset) != "0") {
                 x = board.charAt(char + 9 * offset);
             }
             if ((char + 1) % 3 == 0) {
-                str += x + "|";
+                res += x + "|"; // vertical gridline
             }
             else {
-                str += (x + " ");
+                res += (x + " ");
             }
         }
-        console.log(str);
+        res += "\n"; // begin newline
         if ((offset + 1) % 3 == 0) {
-            console.log("-".repeat(18));
+            res += "-".repeat(19); // horizontal gridline
+            if ((offset + 1) != 9)
+                res += "\n"; //begin newline
         }
-        str = "";
     }
+    return res;
+}
+exports.createPrintString = createPrintString;
+function printBoard(board) {
+    console.log(createPrintString(board));
 }
 printBoard("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020");
 /**
