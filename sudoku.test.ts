@@ -1,7 +1,7 @@
 /**
  * Test cases coded with Jest
  */
-const { removeSpaces, convertToArray, isSolved } = require('./sudoku');
+const { removeSpaces, convertToArray, isSolved, convertToString } = require('./sudoku');
 
 /** remove spaces from a string */
 
@@ -30,6 +30,24 @@ test('Convert sudoku string to 3d array', () => {
             [zero, [7], zero, [2], [9], [1], zero, [8], zero],
             [zero, [9], [6], zero, zero, zero, [4], zero, [1]],
         ]);
+});
+
+/** convert array to string */
+
+test('Convert sudoku 3d array to string', () => {
+    expect(
+        convertToString([
+            [zero, [4], [8], zero, zero, zero, zero, [6], [5]],
+            [zero, zero, zero, zero, [3], [7], [2], zero, [4]],
+            [[2], [1], zero, [4], zero, [5], zero, zero, zero],
+            [[6], zero, zero, [1], [7], zero, [5], zero, zero],
+            [[9], [5], zero, zero, zero, [6], [1], [4], zero],
+            [[1], zero, [2], zero, [4], zero, [7], [3], zero],
+            [[3], zero, [1], zero, [8], [4], zero, zero, [7]],
+            [zero, [7], zero, [2], [9], [1], zero, [8], zero],
+            [zero, [9], [6], zero, zero, zero, [4], zero, [1]],
+        ])
+    ).toEqual("048000065000037204210405000600170500950006140102040730301084007070291080096000401");
 });
 
 /** verify if sudoku puzzles are solved */

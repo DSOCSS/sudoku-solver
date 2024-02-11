@@ -48,15 +48,15 @@ function printBoard(board: string) {
             if (board.charAt(char + 9 * offset) != "0") {
                 x = board.charAt(char + 9 * offset);
             }
-            if ((char+1) % 3 == 0) {
+            if ((char + 1) % 3 == 0) {
                 str += x + "|";
-            } else{
+            } else {
                 str += (x + " ");
 
             }
         }
         console.log(str);
-        if ((offset+1) % 3 == 0) {
+        if ((offset + 1) % 3 == 0) {
             console.log("-".repeat(18));
         }
         str = "";
@@ -69,8 +69,18 @@ printBoard("002130748 804000002 017802600 068090270 093200004 500460300 00902400
  * @param board a 3d array of the board
  * @returns a string representation of the board
  */
-function convertToString(board: Array<Array<Array<Number>>>): string {
-    return "";
+export function convertToString(board: Array<Array<Array<Number>>>): string {
+    let res: string = "";
+    for (let row: number = 0; row < 9; row++) {
+        for (let col: number = 0; col < 9; col++) {
+            if (board[row][col].length == 1) { 
+                res += board[row][col]; 
+            } else {
+                res += "0"; //unknown value
+            }
+        }
+    }
+    return res;
 }
 
 /**
@@ -123,5 +133,3 @@ export function isSolved(str: string): boolean {
 function solveSudoku(str: string) {
 
 }
-
-// module.exports = { removeSpaces, convertToArray, isSolved };

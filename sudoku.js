@@ -4,7 +4,7 @@
  * @author Arthur Zarins
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isSolved = exports.removeSpaces = exports.convertToArray = void 0;
+exports.isSolved = exports.convertToString = exports.removeSpaces = exports.convertToArray = void 0;
 /**
  * @param board a string representation of a board. Whitespace is ignored.
  * @returns a 3d array representing a board, with possible candidate lists for each square
@@ -38,6 +38,9 @@ function removeSpaces(str) {
     return str;
 }
 exports.removeSpaces = removeSpaces;
+/**
+ * @author Nate Abbott
+ */
 function printBoard(board) {
     board = removeSpaces(board);
     console.log("-".repeat(18));
@@ -68,8 +71,20 @@ printBoard("002130748 804000002 017802600 068090270 093200004 500460300 00902400
  * @returns a string representation of the board
  */
 function convertToString(board) {
-    return "";
+    var res = "";
+    for (var row = 0; row < 9; row++) {
+        for (var col = 0; col < 9; col++) {
+            if (board[row][col].length == 1) {
+                res += board[row][col];
+            }
+            else {
+                res += "0"; //unknown value
+            }
+        }
+    }
+    return res;
 }
+exports.convertToString = convertToString;
 /**
  * @returns true if game is completed and solved, false otherwise
  */
@@ -121,4 +136,3 @@ exports.isSolved = isSolved;
  */
 function solveSudoku(str) {
 }
-// module.exports = { removeSpaces, convertToArray, isSolved };
