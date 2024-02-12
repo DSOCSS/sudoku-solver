@@ -38,29 +38,34 @@ export function removeSpaces(str: string): string {
 /**
  * @author Nate Abbott
  */
-function printBoard(board: string) {
+export function createPrintString(board: string) {
+    let res: string = "";
     board = removeSpaces(board);
-    console.log("-".repeat(18));
+    res += "-".repeat(19) + "\n";
     for (let offset: number = 0; offset < 9; offset++) {
-        let str: string = "|";
+        res += "|"; //left border
         for (let char: number = 0; char < 9; char++) {
             let x: string = " ";
             if (board.charAt(char + 9 * offset) != "0") {
                 x = board.charAt(char + 9 * offset);
             }
-            if ((char+1) % 3 == 0) {
-                str += x + "|";
-            } else{
-                str += (x + " ");
-
+            if ((char + 1) % 3 == 0) {
+                res += x + "|"; // vertical gridline
+            } else {
+                res += (x + " ");
             }
         }
-        console.log(str);
-        if ((offset+1) % 3 == 0) {
-            console.log("-".repeat(18));
+        res += "\n"; // begin newline
+        if ((offset + 1) % 3 == 0) {
+            res += "-".repeat(19); // horizontal gridline
+            if((offset + 1) != 9) res += "\n"; //begin newline
         }
-        str = "";
     }
+    return res;
+}
+
+function printBoard(board: string) {
+    console.log(createPrintString(board));
 }
 
 printBoard("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020");
@@ -69,8 +74,18 @@ printBoard("002130748 804000002 017802600 068090270 093200004 500460300 00902400
  * @param board a 3d array of the board
  * @returns a string representation of the board
  */
-function convertToString(board: Array<Array<Array<Number>>>): string {
-    return "";
+export function convertToString(board: Array<Array<Array<Number>>>): string {
+    let res: string = "";
+    for (let row: number = 0; row < 9; row++) {
+        for (let col: number = 0; col < 9; col++) {
+            if (board[row][col].length == 1) {
+                res += board[row][col];
+            } else {
+                res += "0"; //unknown value
+            }
+        }
+    }
+    return res;
 }
 
 /**
@@ -123,5 +138,3 @@ export function isSolved(str: string): boolean {
 function solveSudoku(str: string) {
 
 }
-
-// module.exports = { removeSpaces, convertToArray, isSolved };
