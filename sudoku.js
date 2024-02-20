@@ -86,15 +86,17 @@ exports.individualSolved = individualSolved;
 //Testing individualSolved:
 var natesArr = convertToArray("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020");
 console.log("start");
-for (var currRow = 0; currRow < 9; currRow) {
-    for (var currCol = 0; currCol < 9; currCol++) {
+/*
+for (let currRow: number = 0; currRow < 9; currRow++) {
+    for (let currCol: number = 0; currCol < 9; currCol++) {
         console.log(individualSolved(natesArr, currRow, currCol));
     }
 }
+*/
 function scanRows(board) {
     //Board = x,y,avaiable
     //Look at every row
-    for (var currRow = 0; currRow < 9; currRow) {
+    for (var currRow = 0; currRow < 9; currRow++) {
         //create a var that holds which numbers are know in a row
         var numsInRow = [];
         // look at every spot in the row
@@ -104,28 +106,31 @@ function scanRows(board) {
                 numsInRow.push(board[currRow][currCol][0]);
             }
         }
+        console.log(numsInRow);
         // look at every spot in the row
         for (var currCol = 0; currCol < 9; currCol++) {
             // look at every num that needs to be deleted
             for (var numSolved = 0; numSolved < numsInRow.length; numSolved++) {
                 // See if the spot has that number (if it's already deleted, do nothing)
-                if (board[currRow][currCol].includes(numsInRow[numSolved])) {
+                console.log(numsInRow[numSolved]);
+                if (board[currRow][currCol].length != 1 && board[currRow][currCol].includes(numsInRow[numSolved])) {
                     // Find index that needs to be deleted
                     var indexToDelete = board[currRow][currCol].indexOf(numsInRow[numSolved]);
+                    console.log(indexToDelete);
                     // Delete the number thats already been solved
-                    board[currRow][currCol].splice(indexToDelete);
+                    board[currRow][currCol].splice(indexToDelete, 1);
+                    console.log(board[currRow][currCol]);
                 }
             }
         }
     }
 }
 exports.scanRows = scanRows;
-//Testing scanRows:
 // Copy from the scanRows - should work the same
 function scanCols(board) {
     //Board = x,y,avaiable
     //Look at every row
-    for (var currCol = 0; currCol < 9; currCol) {
+    for (var currCol = 0; currCol < 9; currCol++) {
         //create a var that holds which numbers are know in a col
         var numsInCol = [];
         // look at every spot in the col
@@ -140,11 +145,11 @@ function scanCols(board) {
             // look at every num that needs to be deleted
             for (var numSolved = 0; numSolved < numsInCol.length; numSolved++) {
                 // See if the spot has that number (if it's already deleted, do nothing)
-                if (board[currRow][currCol].includes(numsInCol[numSolved])) {
+                if (board[currRow][currCol].length != 1 && board[currRow][currCol].includes(numsInCol[numSolved])) {
                     // Find index that needs to be deleted
                     var indexToDelete = board[currRow][currCol].indexOf(numsInCol[numSolved]);
                     // Delete the number thats already been solved
-                    board[currRow][currCol].splice(indexToDelete);
+                    board[currRow][currCol].splice(indexToDelete, 1);
                 }
             }
         }
@@ -156,13 +161,15 @@ function scanSquares(board) {
     // finding which of the nine blocks we're in
     for (var whichBox = 0; whichBox < 9; whichBox++) {
         //Finding where boxes start
-        var rowStart = (whichBox / 3) * 3;
+        // console.log(whichBox/3);
+        // console.log(Math.floor(whichBox/3));
+        var rowStart = Math.floor(whichBox / 3) * 3;
         var colStart = (whichBox % 3) * 3;
         //create a var that holds which numbers are know in a row
         var numsInBox = [];
         //look at every spot in the box
-        for (var currRow = rowStart; currRow < 3; currRow++) {
-            for (var currCol = colStart; currCol < 3; currCol++) {
+        for (var currRow = rowStart; currRow < rowStart + 3; currRow++) {
+            for (var currCol = colStart; currCol < colStart + 3; currCol++) {
                 //record if the spot has only one solution
                 if (individualSolved(board, currRow, currCol)) {
                     numsInBox.push(board[currRow][currCol][0]);
@@ -170,16 +177,16 @@ function scanSquares(board) {
             }
         }
         //look at every spot in the box
-        for (var currRow = rowStart; currRow < 3; currRow++) {
-            for (var currCol = colStart; currCol < 3; currCol++) {
+        for (var currRow = rowStart; currRow < rowStart + 3; currRow++) {
+            for (var currCol = colStart; currCol < colStart + 3; currCol++) {
                 // look at every num that needs to be deleted
                 for (var numSolved = 0; numSolved < numsInBox.length; numSolved++) {
                     // See if the spot has that number (if it's already deleted, do nothing)
-                    if (board[currRow][currCol].includes(numsInBox[numSolved])) {
+                    if (board[currRow][currCol].length != 1 && board[currRow][currCol].includes(numsInBox[numSolved])) {
                         // Find index that needs to be deleted
                         var indexToDelete = board[currRow][currCol].indexOf(numsInBox[numSolved]);
                         // Delete the number thats already been solved
-                        board[currRow][currCol].splice(indexToDelete);
+                        board[currRow][currCol].splice(indexToDelete, 1);
                     }
                 }
             }
@@ -187,6 +194,15 @@ function scanSquares(board) {
     }
 }
 exports.scanSquares = scanSquares;
+scanRows(natesArr);
+scanCols(natesArr);
+scanSquares(natesArr);
+console.log("start");
+for (var currRow = 0; currRow < 9; currRow++) {
+    for (var currCol = 0; currCol < 9; currCol++) {
+        console.log(natesArr[currRow][currCol]);
+    }
+}
 /**
  * @param board a 3d array of the board
  * @returns a string representation of the board
