@@ -4,7 +4,7 @@
  * @author Arthur Zarins
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isSolved = exports.convertToString = exports.createPrintString = exports.removeSpaces = exports.convertToArray = void 0;
+exports.isSolved = exports.convertToString = exports.scanSquares = exports.scanCols = exports.scanRows = exports.individualSolved = exports.createPrintString = exports.removeSpaces = exports.convertToArray = void 0;
 /**
  * @param board a string representation of a board. Whitespace is ignored.
  * @returns a 3d array representing a board, with possible candidate lists for each square
@@ -73,6 +73,136 @@ function printBoard(board) {
     console.log(createPrintString(board));
 }
 printBoard("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020");
+/**
+ * @param board
+ * @author Nate Abbott
+ * For individualSolved, scanRows, scanCols, and scanBoxes
+ */
+function individualSolved(board, row, col) {
+    //If the spot has only one solution (array of one) then return true, else return false
+    return board[row][col].length == 1;
+}
+exports.individualSolved = individualSolved;
+//Testing individualSolved:
+var natesArr = convertToArray("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020");
+console.log("start");
+/*
+for (let currRow: number = 0; currRow < 9; currRow++) {
+    for (let currCol: number = 0; currCol < 9; currCol++) {
+        console.log(individualSolved(natesArr, currRow, currCol));
+    }
+}
+*/
+function scanRows(board) {
+    //Board = x,y,avaiable
+    //Look at every row
+    for (var currRow = 0; currRow < 9; currRow++) {
+        //create a var that holds which numbers are know in a row
+        var numsInRow = [];
+        // look at every spot in the row
+        for (var currCol = 0; currCol < 9; currCol++) {
+            // add to numInRow if the spot is know
+            if (individualSolved(board, currRow, currCol)) {
+                numsInRow.push(board[currRow][currCol][0]);
+            }
+        }
+        console.log(numsInRow);
+        // look at every spot in the row
+        for (var currCol = 0; currCol < 9; currCol++) {
+            // look at every num that needs to be deleted
+            for (var numSolved = 0; numSolved < numsInRow.length; numSolved++) {
+                // See if the spot has that number (if it's already deleted, do nothing)
+                console.log(numsInRow[numSolved]);
+                if (board[currRow][currCol].length != 1 && board[currRow][currCol].includes(numsInRow[numSolved])) {
+                    // Find index that needs to be deleted
+                    var indexToDelete = board[currRow][currCol].indexOf(numsInRow[numSolved]);
+                    console.log(indexToDelete);
+                    // Delete the number thats already been solved
+                    board[currRow][currCol].splice(indexToDelete, 1);
+                    console.log(board[currRow][currCol]);
+                }
+            }
+        }
+    }
+}
+exports.scanRows = scanRows;
+// Copy from the scanRows - should work the same
+function scanCols(board) {
+    //Board = x,y,avaiable
+    //Look at every row
+    for (var currCol = 0; currCol < 9; currCol++) {
+        //create a var that holds which numbers are know in a col
+        var numsInCol = [];
+        // look at every spot in the col
+        for (var currRow = 0; currRow < 9; currRow++) {
+            // add to numInCol if the spot is know
+            if (individualSolved(board, currRow, currCol)) {
+                numsInCol.push(board[currRow][currCol][0]);
+            }
+        }
+        // look at every spot in the row
+        for (var currRow = 0; currRow < 9; currRow++) {
+            // look at every num that needs to be deleted
+            for (var numSolved = 0; numSolved < numsInCol.length; numSolved++) {
+                // See if the spot has that number (if it's already deleted, do nothing)
+                if (board[currRow][currCol].length != 1 && board[currRow][currCol].includes(numsInCol[numSolved])) {
+                    // Find index that needs to be deleted
+                    var indexToDelete = board[currRow][currCol].indexOf(numsInCol[numSolved]);
+                    // Delete the number thats already been solved
+                    board[currRow][currCol].splice(indexToDelete, 1);
+                }
+            }
+        }
+    }
+}
+exports.scanCols = scanCols;
+function scanSquares(board) {
+    // Board = x,y,available
+    // finding which of the nine blocks we're in
+    for (var whichBox = 0; whichBox < 9; whichBox++) {
+        //Finding where boxes start
+        // console.log(whichBox/3);
+        // console.log(Math.floor(whichBox/3));
+        var rowStart = Math.floor(whichBox / 3) * 3;
+        var colStart = (whichBox % 3) * 3;
+        //create a var that holds which numbers are know in a row
+        var numsInBox = [];
+        //look at every spot in the box
+        for (var currRow = rowStart; currRow < rowStart + 3; currRow++) {
+            for (var currCol = colStart; currCol < colStart + 3; currCol++) {
+                //record if the spot has only one solution
+                if (individualSolved(board, currRow, currCol)) {
+                    numsInBox.push(board[currRow][currCol][0]);
+                }
+            }
+        }
+        //look at every spot in the box
+        for (var currRow = rowStart; currRow < rowStart + 3; currRow++) {
+            for (var currCol = colStart; currCol < colStart + 3; currCol++) {
+                // look at every num that needs to be deleted
+                for (var numSolved = 0; numSolved < numsInBox.length; numSolved++) {
+                    // See if the spot has that number (if it's already deleted, do nothing)
+                    if (board[currRow][currCol].length != 1 && board[currRow][currCol].includes(numsInBox[numSolved])) {
+                        // Find index that needs to be deleted
+                        var indexToDelete = board[currRow][currCol].indexOf(numsInBox[numSolved]);
+                        // Delete the number thats already been solved
+                        board[currRow][currCol].splice(indexToDelete, 1);
+                    }
+                }
+            }
+        }
+    }
+}
+exports.scanSquares = scanSquares;
+scanRows(natesArr);
+scanCols(natesArr);
+scanSquares(natesArr);
+console.log("start");
+for (var currRow = 0; currRow < 9; currRow++) {
+    for (var currCol = 0; currCol < 9; currCol++) {
+        console.log(natesArr[currRow][currCol]);
+    }
+}
 /**
  * @param board a 3d array of the board
  * @returns a string representation of the board

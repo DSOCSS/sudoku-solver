@@ -58,7 +58,7 @@ export function createPrintString(board: string) {
         res += "\n"; // begin newline
         if ((offset + 1) % 3 == 0) {
             res += "-".repeat(19); // horizontal gridline
-            if((offset + 1) != 9) res += "\n"; //begin newline
+            if ((offset + 1) != 9) res += "\n"; //begin newline
         }
     }
     return res;
@@ -69,6 +69,144 @@ function printBoard(board: string) {
 }
 
 printBoard("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020");
+
+
+/**
+ * @param board 
+ * @author Nate Abbott
+ * For individualSolved, scanRows, scanCols, and scanBoxes
+ */
+
+export function individualSolved(board: Array<Array<Array<Number>>>, row: number, col: number): boolean {
+    //If the spot has only one solution (array of one) then return true, else return false
+    return board[row][col].length == 1;
+}
+
+//Testing individualSolved:
+
+let natesArr: Array<Array<Array<Number>>> = convertToArray("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020")
+console.log("start");
+/*
+for (let currRow: number = 0; currRow < 9; currRow++) {
+    for (let currCol: number = 0; currCol < 9; currCol++) {
+        console.log(individualSolved(natesArr, currRow, currCol));
+    }
+}
+*/
+
+export function scanRows(board: Array<Array<Array<Number>>>) {
+    //Board = x,y,avaiable
+    //Look at every row
+    for (let currRow: number = 0; currRow < 9; currRow++) {
+        //create a var that holds which numbers are know in a row
+        let numsInRow: Array<Number> = [];
+        // look at every spot in the row
+        for (let currCol: number = 0; currCol < 9; currCol++) {
+            // add to numInRow if the spot is know
+            if (individualSolved(board, currRow, currCol)) {
+                numsInRow.push(board[currRow][currCol][0])
+            }
+        }
+        console.log(numsInRow);
+        // look at every spot in the row
+        for (let currCol: number = 0; currCol < 9; currCol++) {
+            // look at every num that needs to be deleted
+            for (let numSolved: number = 0; numSolved < numsInRow.length; numSolved++) {
+                // See if the spot has that number (if it's already deleted, do nothing)
+                console.log(numsInRow[numSolved]);
+                if (board[currRow][currCol].length != 1 && board[currRow][currCol].includes(numsInRow[numSolved])) {
+                    // Find index that needs to be deleted
+                    let indexToDelete: number = board[currRow][currCol].indexOf(numsInRow[numSolved]);
+                    console.log(indexToDelete);
+                    // Delete the number thats already been solved
+                    board[currRow][currCol].splice(indexToDelete, 1);
+                    console.log(board[currRow][currCol]);
+                }
+            }
+        }
+    }
+}
+
+
+// Copy from the scanRows - should work the same
+export function scanCols(board: Array<Array<Array<Number>>>) {
+    //Board = x,y,avaiable
+    //Look at every row
+    for (let currCol: number = 0; currCol < 9; currCol++) {
+        //create a var that holds which numbers are know in a col
+        let numsInCol: Array<Number> = [];
+        // look at every spot in the col
+        for (let currRow: number = 0; currRow < 9; currRow++) {
+            // add to numInCol if the spot is know
+            if (individualSolved(board, currRow, currCol)) {
+                numsInCol.push(board[currRow][currCol][0])
+            }
+        }
+        // look at every spot in the row
+        for (let currRow: number = 0; currRow < 9; currRow++) {
+            // look at every num that needs to be deleted
+            for (let numSolved: number = 0; numSolved < numsInCol.length; numSolved++) {
+                // See if the spot has that number (if it's already deleted, do nothing)
+                if (board[currRow][currCol].length != 1 && board[currRow][currCol].includes(numsInCol[numSolved])) {
+                    // Find index that needs to be deleted
+                    let indexToDelete: number = board[currRow][currCol].indexOf(numsInCol[numSolved]);
+                    // Delete the number thats already been solved
+                    board[currRow][currCol].splice(indexToDelete, 1);
+                }
+            }
+        }
+    }
+}
+
+export function scanSquares(board: Array<Array<Array<Number>>>) {
+    // Board = x,y,available
+    // finding which of the nine blocks we're in
+    for (let whichBox: number = 0; whichBox < 9; whichBox++) {
+        //Finding where boxes start
+        // console.log(whichBox/3);
+        // console.log(Math.floor(whichBox/3));
+        let rowStart: number = Math.floor(whichBox / 3) * 3;
+        let colStart: number = (whichBox % 3) * 3;
+        //create a var that holds which numbers are know in a row
+        let numsInBox: Array<Number> = [];
+        //look at every spot in the box
+        for (let currRow: number = rowStart; currRow < rowStart + 3; currRow++) {
+            for (let currCol: number = colStart; currCol < colStart + 3; currCol++) {
+                //record if the spot has only one solution
+                if (individualSolved(board, currRow, currCol)) {
+                    numsInBox.push(board[currRow][currCol][0])
+                }
+            }
+        }
+        //look at every spot in the box
+        for (let currRow: number = rowStart; currRow < rowStart + 3; currRow++) {
+            for (let currCol: number = colStart; currCol < colStart + 3; currCol++) {
+                // look at every num that needs to be deleted
+                for (let numSolved: number = 0; numSolved < numsInBox.length; numSolved++) {
+                    // See if the spot has that number (if it's already deleted, do nothing)
+                    if (board[currRow][currCol].length != 1 && board[currRow][currCol].includes(numsInBox[numSolved])) {
+                        // Find index that needs to be deleted
+                        let indexToDelete: number = board[currRow][currCol].indexOf(numsInBox[numSolved]);
+                        // Delete the number thats already been solved
+                        board[currRow][currCol].splice(indexToDelete, 1);
+                    }
+                }
+            }
+        }
+    }
+}
+
+scanRows(natesArr);
+scanCols(natesArr);
+scanSquares(natesArr);
+console.log("start");
+
+for (let currRow: number = 0; currRow < 9; currRow++) {
+    for (let currCol: number = 0; currCol < 9; currCol++) {
+        console.log(natesArr[currRow][currCol]);
+    }
+}
+
 
 /**
  * @param board a 3d array of the board
