@@ -1,11 +1,13 @@
 /**
  * Sudoku solving program
  * @author Arthur Zarins
+ * @author Nate Abbott
  */
 
 /**
  * @param board a string representation of a board. Whitespace is ignored.
  * @returns a 3d array representing a board, with possible candidate lists for each square
+ * @author Arthur Zarins
  */
 export function convertToArray(str: string): Array<Array<Array<Number>>> {
     str = removeSpaces(str); //remove space characters
@@ -26,7 +28,10 @@ export function convertToArray(str: string): Array<Array<Array<Number>>> {
     return arr;
 }
 
-/** Return a version of a given string with no space characters */
+/** 
+ * Return a version of a given string with no space characters 
+ * @author Arthur Zarins
+*/
 export function removeSpaces(str: string): string {
     while (str.indexOf(' ') > -1) {
         let space_i = str.indexOf(' ');
@@ -68,33 +73,22 @@ function printBoard(board: string) {
     console.log(createPrintString(board));
 }
 
-printBoard("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020");
-
-
 /**
  * @param board 
  * @author Nate Abbott
  * For individualSolved, scanRows, scanCols, and scanBoxes
  */
-
 export function individualSolved(board: Array<Array<Array<Number>>>, row: number, col: number): boolean {
     //If the spot has only one solution (array of one) then return true, else return false
     return board[row][col].length == 1;
 }
 
-//Testing individualSolved:
-
-let natesArr: Array<Array<Array<Number>>> = convertToArray("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020")
-console.log("start");
-/*
-for (let currRow: number = 0; currRow < 9; currRow++) {
-    for (let currCol: number = 0; currCol < 9; currCol++) {
-        console.log(individualSolved(natesArr, currRow, currCol));
-    }
-}
-*/
-
-export function scanRows(board: Array<Array<Array<Number>>>) {
+/**
+ * Remove duplicate candidates from a row
+ * @author Nate Abbott
+ */
+export function scanRows(board: Array<Array<Array<Number>>>): boolean {
+    let changed: boolean = false;
     //Board = x,y,avaiable
     //Look at every row
     for (let currRow: number = 0; currRow < 9; currRow++) {
@@ -107,29 +101,27 @@ export function scanRows(board: Array<Array<Array<Number>>>) {
                 numsInRow.push(board[currRow][currCol][0])
             }
         }
-        console.log(numsInRow);
         // look at every spot in the row
         for (let currCol: number = 0; currCol < 9; currCol++) {
             // look at every num that needs to be deleted
             for (let numSolved: number = 0; numSolved < numsInRow.length; numSolved++) {
                 // See if the spot has that number (if it's already deleted, do nothing)
-                console.log(numsInRow[numSolved]);
                 if (board[currRow][currCol].length != 1 && board[currRow][currCol].includes(numsInRow[numSolved])) {
                     // Find index that needs to be deleted
                     let indexToDelete: number = board[currRow][currCol].indexOf(numsInRow[numSolved]);
-                    console.log(indexToDelete);
                     // Delete the number thats already been solved
                     board[currRow][currCol].splice(indexToDelete, 1);
-                    console.log(board[currRow][currCol]);
+                    changed = true;
                 }
             }
         }
     }
+    return changed;
 }
 
-
 // Copy from the scanRows - should work the same
-export function scanCols(board: Array<Array<Array<Number>>>) {
+export function scanCols(board: Array<Array<Array<Number>>>): boolean {
+    let changed: boolean = false;
     //Board = x,y,avaiable
     //Look at every row
     for (let currCol: number = 0; currCol < 9; currCol++) {
@@ -152,19 +144,20 @@ export function scanCols(board: Array<Array<Array<Number>>>) {
                     let indexToDelete: number = board[currRow][currCol].indexOf(numsInCol[numSolved]);
                     // Delete the number thats already been solved
                     board[currRow][currCol].splice(indexToDelete, 1);
+                    changed = true;
                 }
             }
         }
     }
+    return changed; //true if we made any changes to array
 }
 
-export function scanSquares(board: Array<Array<Array<Number>>>) {
+export function scanSquares(board: Array<Array<Array<Number>>>): boolean {
+    let changed: boolean = false;
     // Board = x,y,available
     // finding which of the nine blocks we're in
     for (let whichBox: number = 0; whichBox < 9; whichBox++) {
         //Finding where boxes start
-        // console.log(whichBox/3);
-        // console.log(Math.floor(whichBox/3));
         let rowStart: number = Math.floor(whichBox / 3) * 3;
         let colStart: number = (whichBox % 3) * 3;
         //create a var that holds which numbers are know in a row
@@ -189,24 +182,14 @@ export function scanSquares(board: Array<Array<Array<Number>>>) {
                         let indexToDelete: number = board[currRow][currCol].indexOf(numsInBox[numSolved]);
                         // Delete the number thats already been solved
                         board[currRow][currCol].splice(indexToDelete, 1);
+                        changed = true;
                     }
                 }
             }
         }
     }
+    return changed; //true if we made any changes to array
 }
-
-scanRows(natesArr);
-scanCols(natesArr);
-scanSquares(natesArr);
-console.log("start");
-
-for (let currRow: number = 0; currRow < 9; currRow++) {
-    for (let currCol: number = 0; currCol < 9; currCol++) {
-        console.log(natesArr[currRow][currCol]);
-    }
-}
-
 
 /**
  * @param board a 3d array of the board
@@ -228,6 +211,7 @@ export function convertToString(board: Array<Array<Array<Number>>>): string {
 
 /**
  * @returns true if game is completed and solved, false otherwise
+ * @author Arthur Zarins
  */
 export function isSolved(str: string): boolean {
     let game = convertToArray(str);
@@ -270,9 +254,24 @@ export function isSolved(str: string): boolean {
 }
 
 /**
+ * Solve an unsolved sudoku puzzle
  * @param str a string representation of the uncompleted board
  * @returns a string representation of the solved sudoku puzzle 
+ * @author Arthur Zarins
  */
-function solveSudoku(str: string) {
+export function solveSudoku(str: string): string {
+    let sudokuArr = convertToArray(str);
 
+    // repeatedly scan the board until it stops making progress
+    let solving = true;
+    while (solving) {
+        solving = false; // no edits have been made yet
+        solving = solving || scanRows(sudokuArr);
+        solving = solving || scanCols(sudokuArr);
+        solving = solving || scanSquares(sudokuArr);
+    }
+
+    // convert back to string and print result
+    let solvedStr = convertToString(sudokuArr);
+    return solvedStr;
 }

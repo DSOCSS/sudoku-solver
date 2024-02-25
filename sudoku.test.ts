@@ -73,7 +73,7 @@ test('Convert board string to printable multiline string', () => {
 -------------------`);
 });
 
-/** verify if sudoku puzzles are solved */
+/** verify if finished sudoku puzzles are actually solved */
 
 test('Verify a solved sudoku is solved', () => {
     expect(Sudoku.isSolved(
@@ -96,3 +96,10 @@ test('Detect that a \'solution\' is incorrect (grid 2/8 has two number 4s)', () 
         '435269741 682571493 197834562 826195347 374682915 951743627 519326874 248957136 763418259'
     )).toBe(false);
 });
+
+/** Solve sudoku puzzles */
+
+test('Solve the following sudoku: "002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020"', () => {
+    expect(Sudoku.solveSudoku("002130748 804000002 017802600 068090270 093200004 500460300 009024003 006300190 385001020"))
+        .toBe("652139748834756912917842635468593271793218564521467389179624853246385197385971426");
+})
