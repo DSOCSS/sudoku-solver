@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "lib": [
+            "es6",
+            "dom"
+        ],
+        "esModuleInterop": true,
+    },
+    "files": [
+        "sudoku.ts"
+    ]
+}
