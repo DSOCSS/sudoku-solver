@@ -76,23 +76,23 @@ test('Convert board string to printable multiline string', () => {
 /** verify if finished sudoku puzzles are actually solved */
 
 test('Verify a solved sudoku is solved', () => {
-    expect(Sudoku.isSolved(
+    expect(Sudoku.isValid(
         '435269781 682571493 197834562 826195347 374682915 951743628 519326874 248957136 763418259'
     )).toBe(true); // This is a solved sudoku puzzle
 });
 
 test('Detect that a \'solution\' is incorrect (column 2/8 has two number 3s)', () => {
-    expect(Sudoku.isSolved('435269781 682571493 193834562 826195347 374682915 951743628 519326874 248957136 763418259')).toBe(false);
+    expect(Sudoku.isValid('435269781 682571493 193834562 826195347 374682915 951743628 519326874 248957136 763418259')).toBe(false);
 });
 
 test('Detect that a \'solution\' is incorrect (row 8/8 has two number 7s)', () => {
-    expect(Sudoku.isSolved(
+    expect(Sudoku.isValid(
         '435269781 682571493 197834562 826195347 374682915 951743627 519326874 248957136 763418259'
     )).toBe(false);
 });
 
 test('Detect that a \'solution\' is incorrect (grid 2/8 has two number 4s)', () => {
-    expect(Sudoku.isSolved(
+    expect(Sudoku.isValid(
         '435269741 682571493 197834562 826195347 374682915 951743627 519326874 248957136 763418259'
     )).toBe(false);
 });
@@ -114,14 +114,21 @@ test('Solve the following sudoku (rated Easy): "100489006 730000040 000001295 00
         .toBe("152489376739256841468371295387124659591763428246895713914637582625948137873512964");
 });
 
+console.log("beginning intermediate puzzle 1");
+
 // Intermediate puzzle 1
 test('Solve the following sudoku (rated Intermediate): "020608000 580009700 000040000 370000500 600000004 008000013 000020000 009800036 000306090"', () => {
     expect(Sudoku.solveSudoku("020608000 580009700 000040000 370000500 600000004 008000013 000020000 009800036 000306090"))
         .toBe(Sudoku.removeSpaces("123678945 584239761 967145328 372461589 691583274 458792613 836924157 219857436 745316892"));
 });
 
-// Difficult puzzle 1
+console.log("beginning difficult puzzle 1");
 
+// Difficult puzzle 1
+test('Solve the following sudoku (rated Difficult): "000600400 700003600 000091080 000000000 050180003 000306045 040200060 903000000 020000100"', () => {
+    expect(Sudoku.solveSudoku("000600400 700003600 000091080 000000000 050180003 000306045 040200060 903000000 020000100"))
+        .toBe(Sudoku.removeSpaces("581672439 792843651 364591782 438957216 256184973 179326845 845219367 913768524 627435198"));
+});
 
 //"020608000 580009700 000040000 370000500 600000004 008000013 000020000 009800036 000306090"
 //"123678945584239761967145328372461589691583274458792613836924157219857436745316892"

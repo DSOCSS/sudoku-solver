@@ -160,30 +160,43 @@ export function convertToString(board: Array<Array<Array<Number>>>): string {
 }
 
 /**
- * @returns true if game is completed and solved, false otherwise
+ * @returns true if game valid (no conflicts), false otherwise
+ * The game does not have to be fully solved to be valid
+ * 
+ * TODO: we can instead just check if the row/col/square containing the changed coordinate is valid, and it will be 9x efficient. Do this later!
  * @author Arthur Zarins
  */
-export function isSolved(str: string): boolean {
+export function isValid(str: string): boolean {
     let game = convertToArray(str);
 
-    //verify each row contains nine unique digits
+    //verify each row has no repeating digits
     for (let row = 0; row < 9; row++) {
         let digits: Set<Number> = new Set();
         for (let col = 0; col < 9; col++) {
-            if (game[row][col].length != 1) return false;
-            digits.add(game[row][col][0]);
+            // only look for filled in boxes
+            if (game[row][col].length == 1) {
+                if (digits.has(game[row][col][0])) {
+                    rowConflicts++;
+                    return false; //digit already exists
+                }
+                digits.add(game[row][col][0]);
+            }
         }
-        if (digits.size < 9) return false;
     }
 
     //verify each column contains nine unique digits
     for (let col = 0; col < 9; col++) {
         let digits: Set<Number> = new Set();
         for (let row = 0; row < 9; row++) {
-            if (game[row][col].length != 1) return false;
-            digits.add(game[row][col][0]);
+            // only look for filled in boxes
+            if (game[row][col].length == 1) {
+                if (digits.has(game[row][col][0])) {
+                    colConflicts++;
+                    return false; //digit already exists
+                }
+                digits.add(game[row][col][0]);
+            }
         }
-        if (digits.size < 9) return false;
     }
 
     //verify each 3x3 square contains nine unique digits
@@ -193,14 +206,184 @@ export function isSolved(str: string): boolean {
         let col_i: number = Math.floor(grid / 3) * 3;
         for (let row = row_i; row < row_i + 3; row++) {
             for (let col = col_i; col < col_i + 3; col++) {
-                if (game[row][col].length != 1) return false;
-                digits.add(game[row][col][0]);
+                // only look for filled in boxes
+                if (game[row][col].length == 1) {
+                    if (digits.has(game[row][col][0])) {
+                        sqConflicts++;
+                        return false; //digit already exists
+                    }
+                    digits.add(game[row][col][0]);
+                }
             }
         }
-        if (digits.size < 9) return false;
     }
 
     return true; //all checks have passed
+}
+
+// old method (will be retired)
+export function OLD_isValidArr(arr: number[]): boolean {
+    let str = "";
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] <= 9) {
+            str = str + arr[i];
+        } else {
+            //console.log("WARNING: SPOTTED GREATER THAN 10;");
+            return false;
+        }
+    }
+    return isValid(str);
+}
+
+// get 2d coordinates of a scalar index
+function getCoords(index: number) {
+    return {
+        row: Math.floor(index / 9),
+        col: index % 9
+    }
+}
+
+// convert 2d coordinates to scalar index
+function convertTo1D(row: number, col: number) {
+    return row * 9 + col;
+}
+
+/**
+ * See if the col/row/square containing a box are valid
+ */
+
+var rowConflicts = 0;
+var colConflicts = 0;
+var sqConflicts = 0;
+
+export function isBoxValid(arr: number[], index: number): boolean {
+    let boxVal = arr[index];
+    if (boxVal >= 10) return false; // values of 10+ not allowed
+    if (boxVal == 0) return true; // box is blank; no conflicts
+    let boxRow = getCoords(index).row;
+    let boxCol = getCoords(index).col;
+
+    //verify the digit in the given box doesn't repeat in the row
+    for (let col = 0; col < 9; col++) {
+        let checkI = convertTo1D(boxRow, col);
+        if (checkI >= arr.length) console.log("OVERFLOW");
+        if (arr[checkI] == boxVal && checkI != index) {
+            rowConflicts++;
+            //console.log("row conflict");
+            return false;
+        }
+    }
+
+    //verify the digit in the given box doesn't repeat in the column
+    for (let row = 0; row < 9; row++) {
+        let checkI = convertTo1D(row, boxCol);
+        if (checkI >= arr.length) console.log("OVERFLOW");
+        if (arr[checkI] == boxVal && checkI != index) {
+            colConflicts++;
+            //console.log("column conflict");
+            return false;
+        }
+    }
+
+    //verify the digit in the given box doesn't repeat in the 3x3 square
+
+    // calculate box starting digits
+    let sq_row_i = Math.floor(boxRow / 3) * 3;
+    let sq_col_i = Math.floor(boxCol / 3) * 3;
+    //console.log(`Starting sq search at ${sq_row_i} ${sq_col_i}`);
+    for (let row = sq_row_i; row < sq_row_i + 3; row++) {
+        for (let col = sq_col_i; col < sq_col_i + 3; col++) {
+            let checkI = convertTo1D(row, col);
+            if (checkI >= arr.length) console.log("OVERFLOW");
+            if (arr[checkI] == boxVal && checkI != index) {
+                sqConflicts++;
+                //console.log(`square conflict at ${row} ${col}`);
+                return false;
+            }
+        }
+    }
+
+    return true; //passed all checks
+}
+
+/**
+ * @returns true if every cell in the game is filled (not 0)
+ */
+export function filledPuzzle(arr: number[]): boolean {
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] == 0) return false;
+    }
+    return true; // there are no empty sqaures
+}
+
+function arr1D_toStr(arr: number[]): string {
+    let str = "";
+    for (let i = 0; i < arr.length; i++) {
+        str = str + arr[i];
+    }
+    return str;
+}
+/**
+ * @returns a string of the solved sudoku
+ * @author Arthur Zarins
+ */
+export function backtraceSolve(str: string): string {
+    let varIndicies: number[] = []; //indicies we will change
+    let values: number[] = []; // store string values in array
+
+    //determine where the zeros are
+    for (let i = 0; i < str.length; i++) {
+        if (str.charAt(i) == "0") {
+            varIndicies.push(Number(i));
+        }
+        values.push(Number(str.charAt(i)));
+    }
+
+    /*console.log("varIndicies: ", varIndicies);
+    console.log("initial values", values);
+    console.log("# initial values", values.length);*/
+
+    // repeatedly solve until puzzle is complete and valid
+    let zeroI = 0;
+    let iteration = 0;
+    while (zeroI >= 0 && zeroI < varIndicies.length) {
+        // keep proceeding in DFS until a conflict occurs
+        let currNum = values[varIndicies[zeroI]]; //Number(solStr.charAt(varIndicies[zeroI]));
+        if (currNum >= 10) {
+            //no options work; make the box blank again
+            values[varIndicies[zeroI]] = 0; //solStr = setCharAt(solStr, varIndicies[zeroI], "0");
+            // move back one box and increment that
+            zeroI--;
+            if (zeroI >= 0) values[varIndicies[zeroI]]++;
+        } else {
+            // testing if the new boxValid method and OldIsValid methods disagree
+            if (isBoxValid(values, varIndicies[zeroI]) != OLD_isValidArr(values)) {
+                console.log("CONFLICT!");
+                printBoard(arr1D_toStr(values));
+                console.log(`isBox focusing on ${varIndicies[zeroI]} says `, isBoxValid(values, varIndicies[zeroI]), " while oldIsValidArr says ", OLD_isValidArr(values));
+                console.log(getCoords(varIndicies[zeroI]));
+                console.log();
+            }
+            if (isBoxValid(values, varIndicies[zeroI]) && currNum > 0) {
+                // the entry is filled and the board is valid
+                zeroI++; //move to the next zero item
+            } else {
+                // the box invalidated the board or the box is empty
+                // increment the number
+                values[varIndicies[zeroI]]++;
+            }
+        }
+        //if (iteration % 10000 == 0) console.log("iteration: " + iteration + ",\t\tzeroI: " + zeroI);
+        iteration++;
+    }
+
+    /*console.log("zeroI:", zeroI, "/ valid:", OLD_isValidArr(values), "/ filled", filledPuzzle(values));
+    console.log("done solving, iteration " + iteration);
+    console.log("final values: ", values);
+    console.log("Last value: ", values[values.length - 1], values[values.length - 2]);
+    console.log("# final values: ", values.length);
+    console.log(rowConflicts, colConflicts, sqConflicts);*/
+    return arr1D_toStr(values);
 }
 
 /**
@@ -345,7 +528,26 @@ export function solveSudoku(str: string): string {
 
     // convert back to string and print result
     let solvedStr = convertToString(sudokuArr);
+
+    // use backtracking to complete the solve
+    solvedStr = backtraceSolve(solvedStr);
+
     return solvedStr;
 }
 
-console.log("file loaded");
+function testProgram() {
+    // let exPuzzle = "020608000 580009700 000040000 370000500 600000004 008000013 000020000 009800036 000306090"; //intermediate
+    let exPuzzle = "000600400 700003600 000091080 000000000 050180003 000306045 040200060 903000000 020000100"; //difficult
+    let startTime = new Date().getTime();
+    console.log("We will solve the following sudoku:");
+    printBoard(exPuzzle);
+
+    let solvedPuzzle = solveSudoku(exPuzzle)
+    console.log("solved!");
+    printBoard(solvedPuzzle);
+
+    let msElapsed = new Date().getTime() - startTime;
+    let secondsElapsed = msElapsed / 1000;
+    console.log("Seconds elapsed: ", secondsElapsed);
+    console.log("Checking if solution is valid: ", isValid(solvedPuzzle));
+}
