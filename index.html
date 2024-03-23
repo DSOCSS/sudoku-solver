@@ -2,13 +2,32 @@
 
 <head>
     <title>Sudoku Solver</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel=icon href="./images/sudoku.png">
 </head>
 
 <body>
+    <h1>Sudoku Solver</h1>
 
+    <div id="sudokuBoard"> </div>
+    <div id="sudokuBoardOffset"></div>
+
+    <div id="solveBtn">
+        <button onclick="htmlSolveSudoku();">Solve Sudoku</button>
+        <button onclick="clearHTMLBoard();">Clear Board</button>
+    </div>
+
+    <a href="https://dsocss.github.io/website/">
+        <img id="clubLink" src="./images/DSOCSS_logo.png">
+    </a>
+    <div class="credits">Programmed by<br>Arthur Zarins<br>and Nate Abbott</div>
 </body>
 
 <script>var exports = {};</script>
 <script src="./sudoku.js"></script>
+<script>
+    createHTMLBoard(); //create the board
+</script>
 
 </html>

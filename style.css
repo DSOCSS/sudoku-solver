@@ -1,0 +1,83 @@
+:root{
+    --cellSize: min(8vw, 7vh);
+}
+:root, html, body{
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1{
+    text-align: center;
+}
+
+.cell{
+    border: 1px solid black;
+    width: var(--cellSize);
+    height: var(--cellSize);
+    margin: 0;
+    padding: 0;
+}
+
+#sudokuBoard{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0;
+    margin: 0;
+    /* 10px for emphasized borders, 15px for other borders*/
+    width: calc(var(--cellSize) * 9 + 10px + 15px);
+}
+
+#sudokuBoardOffset{
+    height: calc(var(--cellSize) * 9 + 10px + 15px);
+}
+
+
+br{
+    height: 0;
+    width: 0;
+}
+
+input{
+    text-align: center;
+    font-size: 30px;
+    width: 30px;
+    aspect-ratio: 1;
+    padding: 0;
+    margin: 0;
+    display: inline;
+}
+
+button{
+    background-color: white;
+    border: 2px solid black;
+    text-align: center;
+    justify-content: center;
+    font-size: calc(0.5vw + 16px);
+}
+
+#solveBtn{
+    padding-top: max(calc(50px - 3vw), 10px);
+    text-align: center;
+}
+
+#clubLink{
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    width: min(calc(14vw + 20px), 150px);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+a{
+    color: black;
+}
+
+.credits{
+    text-align: center;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}

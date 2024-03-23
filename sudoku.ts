@@ -536,8 +536,8 @@ export function solveSudoku(str: string): string {
 }
 
 function testProgram() {
-    // let exPuzzle = "020608000 580009700 000040000 370000500 600000004 008000013 000020000 009800036 000306090"; //intermediate
-    let exPuzzle = "000600400 700003600 000091080 000000000 050180003 000306045 040200060 903000000 020000100"; //difficult
+    let exPuzzle = "020608000 580009700 000040000 370000500 600000004 008000013 000020000 009800036 000306090"; //intermediate
+    // let exPuzzle = "000600400 700003600 000091080 000000000 050180003 000306045 040200060 903000000 020000100"; //difficult
     let startTime = new Date().getTime();
     console.log("We will solve the following sudoku:");
     printBoard(exPuzzle);
@@ -550,4 +550,65 @@ function testProgram() {
     let secondsElapsed = msElapsed / 1000;
     console.log("Seconds elapsed: ", secondsElapsed);
     console.log("Checking if solution is valid: ", isValid(solvedPuzzle));
+}
+
+// create a board in an HTML file
+function createHTMLBoard() {
+    const borderStyle = "5px solid black";
+    let htmlBoard: any = document.getElementById("sudokuBoard");
+    for (let i = 0; i < 81; i++) {
+        let square = document.createElement("input");
+        square.type = "text";
+        square.maxLength = 1;
+        square.classList.add("cell");
+        square.id = String(i); //store number id
+        htmlBoard.appendChild(square);
+
+        if ((i + 1) % 9 == 0) {
+            //start a new row
+            htmlBoard.appendChild(document.createElement("div"));
+        }
+
+        // Emphasize 3x3 box borders
+        if (i % 3 == 0 && i % 9 != 0) {
+            square.style.borderLeft = borderStyle;
+        }
+        if (Math.floor(i / 9) % 3 == 0 && Math.floor(i / 9) != 0) {
+            square.style.borderTop = borderStyle;
+        }
+    }
+
+    // set the html offset height
+    let htmlBoardOffset: any = document.getElementById("sudokuBoardOffset");
+    htmlBoardOffset.height = htmlBoard.height;
+    htmlBoardOffset.width = "5px";
+}
+
+function clearHTMLBoard() {
+    for (let i = 0; i < 81; i++) {
+        let square: any = document.getElementById(String(i));
+        if (square != undefined) square.value = "";
+    }
+}
+
+// parse and solve a board in an HTML file
+function htmlSolveSudoku() {
+    let sudokuStr = "";
+    // read all square values
+    for (let i = 0; i < 81; i++) {
+        let square: any = document.getElementById(String(i));
+        let val = square.value;
+        if (val == "") val = "0";
+        sudokuStr += val;
+    }
+    console.log(sudokuStr);
+
+    // solve the sudoku
+    let solvedPuzzle = solveSudoku(sudokuStr);
+    // update the board
+    for (let i = 0; i < 81; i++) {
+        let square: any = document.getElementById(String(i));
+        square.value = solvedPuzzle.charAt(i);
+    }
+    console.log("done!");
 }
