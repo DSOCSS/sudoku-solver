@@ -62,6 +62,10 @@ button{
     text-align: center;
 }
 
+#statusUpdate{
+    text-align: center;
+}
+
 #clubLink{
     position: absolute;
     left: 10px;

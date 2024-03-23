@@ -372,8 +372,19 @@ function backtraceSolve(str) {
                 values[varIndicies[zeroI]]++;
             }
         }
+        if (iteration % 10000 == 0 && document != undefined) {
+            let status = document.getElementById("statusUpdate");
+            if (status != undefined)
+                status.innerHTML = `iteration ${iteration} (index=${zeroI})`;
+        }
         //if (iteration % 10000 == 0) console.log("iteration: " + iteration + ",\t\tzeroI: " + zeroI);
         iteration++;
+    }
+    // clear status message
+    if (document != undefined) {
+        let status = document.getElementById("statusUpdate");
+        if (status != undefined)
+            status.innerHTML = '';
     }
     /*console.log("zeroI:", zeroI, "/ valid:", OLD_isValidArr(values), "/ filled", filledPuzzle(values));
     console.log("done solving, iteration " + iteration);
@@ -553,6 +564,33 @@ function createHTMLBoard() {
         square.maxLength = 1;
         square.classList.add("cell");
         square.id = String(i); //store number id
+        square.autocomplete = "off";
+        square.oninput = () => {
+            if (i < 80 && square.value != '') {
+                //advance to the next square after input
+                document.getElementById(String(Number(i + 1))).focus();
+            }
+            // ensure user input is only numbers
+            let numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ''];
+            if (numbers.indexOf(square.value) == -1) {
+                square.value = ''; // make square blank
+            }
+        };
+        // navigate board with arrow keys
+        square.onkeyup = (evt) => {
+            if (evt.key == "ArrowLeft" && i > 0) {
+                document.getElementById(String(Number(i - 1))).focus();
+            }
+            else if (evt.key == "ArrowRight" && i < 80) {
+                document.getElementById(String(Number(i + 1))).focus();
+            }
+            else if (evt.key == "ArrowDown" && i < 72) {
+                document.getElementById(String(Number(i + 9))).focus();
+            }
+            else if (evt.key == "ArrowUp" && i > 8) {
+                document.getElementById(String(Number(i - 9))).focus();
+            }
+        };
         htmlBoard.appendChild(square);
         if ((i + 1) % 9 == 0) {
             //start a new row
